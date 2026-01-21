@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>유치부 기능 배치d</title>
+</head>
+
+<body>
+
+    <h2>유치부 기능 배치</h2>
+
+    <div class="form-container">
+        
+        <!-- 날짜 및 주제 -->
+        <div class="section-card">
+            <h3>기본 정보</h3>
+            <div class="row">
+                <div class="col">
+                    <label for="select-date">날짜 선택</label>
+                    <input type="date" id="select-date">
+                </div>
+                <div class="col">
+                    <label for="feature-topic">기능 주제</label>
+                    <input type="text" id="feature-topic" readonly placeholder="날짜를 선택하면 자동 입력됩니다">
+                </div>
+            </div>
+        </div>
+
+        <!-- 찬양 정보 -->
+        <div class="section-card">
+            <h3>찬양 및 영상</h3>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group">
+                        <label for="current-praise">이번 주 찬율</label>
+                        <input type="text" id="current-praise" readonly placeholder="자동 입력됩니다">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <label for="last-praise">지난 주 찬율</label>
+                        <input type="text" id="last-praise" readonly placeholder="자동 입력됩니다">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <div class="input-group">
+                    <label for="motion-link">이번 주 손유희 링크</label>
+                    <input type="text" id="motion-link" readonly placeholder="자동 입력됩니다">
+                </div>
+                <div class="input-group">
+                    <label for="current-praise-video">이번 주 찬율 영상 링크</label>
+                    <input type="text" id="current-praise-video" readonly placeholder="자동 입력됩니다">
+                </div>
+                <div class="input-group">
+                    <label for="last-praise-video">저번 주 찬율 영상 링크</label>
+                    <input type="text" id="last-praise-video" readonly placeholder="자동 입력됩니다">
+                </div>
+            </div>
+        </div>
+
+        <!-- 담당자 (Grid Layout) -->
+        <div class="section-card">
+            <h3>담당자 선택</h3>
+            <div class="grid-3">
+                
+                <div>
+                    <label>찬송</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="person-praise" readonly placeholder>
+                        <button onclick="openModal('person-praise')">선택</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label>찬율</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="person-lyric" readonly placeholder>
+                        <button onclick="openModal('person-lyric')">선택</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label>손유희</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="person-motion" readonly placeholder>
+                        <button onclick="openModal('person-motion')">선택</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label>암송</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="recitation" readonly placeholder>
+                        <button onclick="openModal('recitation')">선택</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label>체조</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="gymnastics" readonly placeholder>
+                        <button onclick="openModal('gymnastics')">선택</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 출력 박스 -->
+        <div class="section-card">
+            <h3>메시지 생성이 완료되었습니다</h3>
+            <textarea id="final-message" readonly></textarea>
+            <button onclick="copyMessage()">복사하기</button>
+        </div>
+
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="nameModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">담당자 선택</div>
+            <div class="name-grid" id="nameGrid">
+                <!-- Buttons will be injected here via JS -->
+            </div>
+            <button class="close-btn" onclick="closeModal()">달기</button>
+        </div>
+    </div>
+
+    <script>
+        const startDate = new Date("2026-01-04");
+        // 주제
+        const topics = [
+            "1과 친구야 안녕", "2과 나는 교회학교가 좋아요", "3과 보이지 않는 하나님", "4과 나를 사랑하시는 하나님",
+            "5과 성경은 하나님이 보내신 편지", "6과 빛을 만드신 하나님", "7과 하늘을 만드신 하나님",
+            "8과 땅에는 나무와 꽃들이 있어요", "9과 해와 달과 별을 만드신 하나님", "10과 새를 만드신 하나님",
+            "11과 물고기를 만드신 하나님", "12과 땅에는 동물들이 살아요", "13과 하나님은 흙으로 사람을 만드셨어요",
+            "14과 에덴동산", "15과 방주에 타세요", "16과 바벨탑을 쌓았어요", "17과 하나님의 말씀을 따른 아브라함",
+            "18과 이삭을 바친 아브라함", "19과 쌍둥이 형제 에서와 야곱", "20과 총리가 된 요셉",
+            "21과 물에서 건진 모세", "22과 열가지 재앙", "23과 홍해를 건넜어요", "24과 광야에서 지켜주신 하나님",
+            "25과 하나님을 의지한 여호수아와 갈렙", "26과 무너진 여리고성", "27과 믿음의 승리자 기드온",
+            "28과 힘을 잃은 삼손", "29과 말씀을 따르지 않은 사울 왕", "30과 용감한 다윗",
+            "31과 다윗과 요나단", "32과 지혜의 왕 솔로몬", "33과 선지자 엘리야", "34과 기도하는 다니엘",
+            "35과 물고기 뱃속에 갇힌 요나", "36과 말씀대로 예수님께서 태어나셨어요", "37과 지혜로우신 예수님",
+            "38과 시험을 이기신 예수님", "39과 예수님께서는 어린이를 사랑하세요", "40과 물로 포도주를 만드셨어요",
+            "41과 예수님은 아픈 사람을 고쳐 주셨어요", "42과 많은 사람을 먹이셨어요", "43과 거친 바다를 잔잔하게 하셨어요",
+            "44과 죽은 나사로를 살리셨어요", "45과 다시 찾은 아들", "46과 삭개오는 예수님을 만났어요",
+            "47과 예수님께서 제자의 발을 씻기셨어요", "48과 고난 받으신 예수님", "49과 예수님은 다시 살아나셨어요",
+            "50과 다시 오실 예수님", "51과 천국", "52과 하나님 감사해요"
+        ];
+        // 찬율
+        const praises = [
+            "1과 교회가족들", "2과 하나님이 좋아서", "3과 내 하나님은", "4과 주 예수 사랑 기쁨", "5과 말씀은 편지",
+            "6과 하나님이 만드셨어요", "7과 그 누가 만들었나(2,3절)", "8과 자기 혼자 컸을까", "9과 그 누가 만들었나(4,1절)",
+            "10과 아기 병아리(1절)", "11과 찬양 드리죠(1절)", "12과 아기 병아리(2절)", "13과 옛날 옛적 하나님",
+            "14과 선악과", "15과 노아 할아버지", "16과 바벨탑", "17과 주님만 따라 갈래", "18과 아브라함과 이삭",
+            "19과 쌍둥이 형제", "20과 용서하는 아이", "21과 나는 착한아이", "22과 열재앙 이야기", "23과 열려라 바다야",
+            "24과 마귀는 도망갔네", "25과 성령님을 의지해", "26과 무너진 여리고성", "27과 나는 주의 군병",
+            "28과 노아 할아버지(2절)", "29과 부패한 마음", "30과 꼬마 다윗", "31과 용서하는 아이", "32과 왕왕왕",
+            "33과 해 뜨는데 부터", "34과 다니엘", "35과 요나 이야기", "36과 성경말씀 너무 사랑해", "37과 나의 한가지 소원",
+            "38과 악마 사탄", "39과 예수님처럼", "40과 예수님이 말씀하시니(1절)", "41과 날 도우시네",
+            "42과 다섯개 밖에 없어요", "43과 예수님이 말씀하시니(4절)", "44과 예수님이 말씀하시니(3절)",
+            "45과 주 나의 사랑", "46과 난쟁이 삭개오", "47과 똑똑똑", "48과 알고 싶어요",
+            "49과 예수님 날 사랑하사", "50과 이 세상에 예수님", "51과 황금성", "52과 내가 산을 향하여"
+        ];
+        // 손유희 링크
+        const motionLinks = [
+            "https://www.youtube.com/watch?v=IgV3JL8e1-o", "https://www.youtube.com/watch?v=DlLUq1fzfcY",
+            "https://www.youtube.com/watch?v=XBNF0FBBDCc", "https://www.youtube.com/watch?v=AD6oSno-xQc",
+            "https://www.youtube.com/watch?v=dACeTDi-9OA", "https://www.youtube.com/watch?v=hdRbwMjTXjY&feature=youtu.be",
+            "https://www.youtube.com/watch?v=sfLxiK6hFpk", "https://www.youtube.com/watch?v=LWCmH9p3r64",
+            "https://www.youtube.com/watch?v=XbFwLrlOm0I", "https://www.youtube.com/watch?v=9B8Wkm2-nk0",
+            "https://www.youtube.com/watch?v=yUU3so0Bn9c", "https://www.youtube.com/watch?v=d2NxjFAp5U4",
+            "https://www.youtube.com/watch?v=CcNtjI48XYA", "https://www.youtube.com/watch?v=aQJyQgYJe30",
+            "https://www.youtube.com/watch?v=ejpZJfoJqOQ", "https://www.youtube.com/watch?v=LTfA9938IcQ",
+            "https://www.youtube.com/watch?v=bLko2wn4w4U", "https://www.youtube.com/watch?v=ZsHratNFzR0",
+            "https://www.youtube.com/watch?v=4dpyWJoW4QY", "https://www.youtube.com/watch?v=fZ7dWxqvJe0",
+            "https://www.youtube.com/watch?v=Pjhm0buhUHA", "https://www.youtube.com/watch?v=56lRx7QqbeI",
+            "https://www.youtube.com/watch?v=_98zBLXLfBc", "https://www.youtube.com/watch?v=l3GcZHVyLuQ",
+            "https://www.youtube.com/watch?v=V1a0MwYZjbE", "https://www.youtube.com/watch?v=BKYvHueYtQw",
+            "https://www.youtube.com/watch?v=h4SwpbF5N3s", "https://www.youtube.com/watch?v=lhXEatOXD08",
+            "https://www.youtube.com/watch?v=xIEZgxgw3rE", "https://www.youtube.com/watch?v=-hG_MjSSUBA",
+            "https://www.youtube.com/watch?v=uvlcTOZ-N4k", "https://www.youtube.com/watch?v=4QHiOW__rYg",
+            "https://www.youtube.com/watch?v=Fta2Il6AerI", "https://www.youtube.com/watch?v=x9-1ahXAA5o",
+            "https://www.youtube.com/watch?v=rt5vCReCA4k", "https://www.youtube.com/watch?v=kVH4w04zjIE",
+            "https://www.youtube.com/watch?v=jVs5NyzRFnw", "https://www.youtube.com/watch?v=Pacc-NWbg4E",
+            "https://www.youtube.com/watch?v=i2Cr1qTwrfM", "https://www.youtube.com/watch?v=Ljn6AJ74AkY",
+            "https://www.youtube.com/watch?v=Z1uIfc8RWis", "https://www.youtube.com/watch?v=khGUjhLsamY",
+            "https://www.youtube.com/watch?v=XfAECmcs_mc", "https://www.youtube.com/watch?v=KYxAirAf0w0",
+            "https://www.youtube.com/watch?v=ik36KzAlEiA", "https://www.youtube.com/watch?v=JOyEiAzk_pY",
+            "https://www.youtube.com/watch?v=lKGBB28N4Gw", "https://www.youtube.com/watch?v=rn7j1-w-Al8",
+            "https://www.youtube.com/watch?v=b2r7UfWbtlc", "https://www.youtube.com/watch?v=sYjyJP0N5Ek",
+            "https://www.youtube.com/watch?v=8PWXfcIskpU", "https://www.youtube.com/watch?v=lK03s5z4Lmo"
+        ];
+        // 찬율 링크
+        const currentPraiseVideos = [
+            "https://www.youtube.com/embed/d5UJxhoO9B4", "", "https://www.youtube.com/embed/L6ZP-TDeXBk", "https://www.youtube.com/embed/-3k_P8qdAM0",
+            "https://www.youtube.com/embed/nMh4XcGo5i8", "https://www.youtube.com/embed/7WfuE5Shnaw", "https://www.youtube.com/embed/M77zXojruEE",
+            "https://www.youtube.com/embed/oejH6AVDVPk", "https://www.youtube.com/embed/M77zXojruEE", "https://www.youtube.com/embed/zwdyhqBfAPc",
+            "https://www.youtube.com/embed/XnXLVJ5iniY", "https://www.youtube.com/embed/zwdyhqBfAPc", "https://www.youtube.com/embed/-1JXJj-XZwY",
+            "https://www.youtube.com/embed/fgyC6QO7FzY", "https://www.youtube.com/embed/DhAKKHEMZHk", "https://www.youtube.com/embed/pmVrojCnh8E",
+            "https://www.youtube.com/embed/2T_ZWQ0Zjdk", "https://www.youtube.com/embed/0nYcZ67R8fw", "https://www.youtube.com/embed/nGIty9AOElI",
+            "https://www.youtube.com/embed/KgeNYQO-o-M", "https://www.youtube.com/embed/RKZ1AQqJcY8", "https://www.youtube.com/embed/wueksbg0yWc",
+            "https://www.youtube.com/embed/034sM1wsHIk", "https://www.youtube.com/embed/jpsPs-4_WFA", "https://www.youtube.com/embed/Gs4MBsnAAUI",
+            "https://www.youtube.com/embed/UnL-DxMuXsQ", "https://www.youtube.com/embed/vfFfEPCEMUU", "https://www.youtube.com/embed/DhAKKHEMZHk",
+            "https://www.youtube.com/embed/4Zcq7tFR51c", "https://www.youtube.com/embed/ejwRxCOJffc", "https://www.youtube.com/embed/KgeNYQO-o-M",
+            "https://www.youtube.com/embed/5cQi6ek8Xo0", "https://www.youtube.com/embed/b7Uotc5Qv30", "https://www.youtube.com/embed/y53J2Dq9te8",
+            "https://www.youtube.com/embed/bDFRWEbwVOE", "https://www.youtube.com/embed/0Vj-nK7JRXM", "https://www.youtube.com/embed/Ornss2zsF0k",
+            "https://www.youtube.com/embed/3tdXV1G0Yw0", "https://www.youtube.com/embed/O3PRAP0KX6E", "https://www.youtube.com/embed/gstCuanToSg",
+            "https://www.youtube.com/embed/oT6GLabtVlo", "https://www.youtube.com/embed/rlR8Rj_kjhA", "https://www.youtube.com/embed/gstCuanToSg",
+            "https://www.youtube.com/embed/gstCuanToSg", "https://www.youtube.com/embed/xZxEqBcocJo", "https://www.youtube.com/embed/LgwW0zmUhxE",
+            "https://www.youtube.com/embed/SHD1PPwcYH8", "https://www.youtube.com/embed/iBllj0SMlck", "https://www.youtube.com/embed/zmqPw0L4DOI",
+            "https://www.youtube.com/embed/LFE7nobPqaM", "https://www.youtube.com/embed/ZDXeUkYUZ38", "https://www.youtube.com/embed/R_8gQY1I3-E"
+        ];
+        // 모달 관련 변수
+        let currentTargetId = null;
+        const names = [
+            "박경호b", "김지석b", "노현준b", "강민구b", "이찬민b", "최민준b",
+            "조현지s", "강민지s", "김이안s"
+        ];
+
+        // 모달 열기
+        function openModal(targetId) {
+            currentTargetId = targetId;
+            const modal = document.getElementById('nameModal');
+            const nameGrid = document.getElementById('nameGrid');
+            
+            // 이름 버튼 생성 (최초 1회만 하거나 매번 새로 생성)
+            nameGrid.innerHTML = '';
+            names.forEach(name => {
+                const btn = document.createElement('button');
+                btn.className = 'name-btn';
+                btn.innerText = name;
+                btn.onclick = () => selectName(name);
+                nameGrid.appendChild(btn);
+            });
+
+            // "선택 안함" 버튼 추가 (옵션)
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'name-btn';
+            clearBtn.innerText = '선택 안함';
+            clearBtn.style.color = '#868e96';
+            clearBtn.onclick = () => selectName('');
+            nameGrid.appendChild(clearBtn);
+
+            modal.style.display = 'flex';
+        }
+
+        // 이름 선택 시
+        function selectName(name) {
+            if (currentTargetId) {
+                document.getElementById(currentTargetId).value = name;
+                generateMessage(); // 값 변경 후 메시지 재생성
+            }
+            closeModal();
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('nameModal').style.display = 'none';
+            currentTargetId = null;
+        }
+
+        // 모달 바깥 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('nameModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        document.getElementById("select-date").addEventListener("change", function () {
+            const selectedDate = new Date(this.value);
+            const diffTime = selectedDate - startDate;
+            const weekNumber = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000)) + 1;
+            // 날짜
+            if (weekNumber < 1 || weekNumber > 52) {
+                alert("2026년 1월 4일 ~ 1년치(1과~52과)만 지원됩니다.");
+                return;
+            }
+
+            // 기능 주제 (Input)
+            document.getElementById("feature-topic").value = topics[weekNumber - 1] || "";
+
+            // 이번 주 찬율 (Input)
+            document.getElementById("current-praise").value = praises[weekNumber - 1] || "";
+
+            // 지난 주 찬율 (Input)
+            if (weekNumber > 1) {
+                document.getElementById("last-praise").value = praises[weekNumber - 2] || "";
+            } else {
+                document.getElementById("last-praise").value = "지난 주 없음";
+            }
+
+            // 손유희 링크
+            document.getElementById("motion-link").value = motionLinks[weekNumber - 1];
+
+            document.getElementById("current-praise-video").value = currentPraiseVideos[weekNumber - 1];
+            document.getElementById("last-praise-video").value = weekNumber > 1 ? currentPraiseVideos[weekNumber - 2] : "";
+
+            generateMessage();
+
+        });
+        
+        // 기존 addEventListener 제거 (불필요)
+        /*
+        document.getElementById('person-praise').addEventListener('change', (e) => { console.log('찬송 담당자:', e.target.value); });
+        // ... 기타 리스너들 제거
+        */
+
+        function generateMessage() {
+            const rawDate = document.getElementById("select-date").value;
+            // Date가 유효하지 않으면 중단
+            if (!rawDate) return;
+
+            const selectedDateObj = new Date(rawDate);
+            const formattedDate = `${selectedDateObj.getMonth() + 1}월 ${selectedDateObj.getDate()}일`;
+
+            const weekIndex = getWeekIndex(rawDate); 
+
+            const featureTopic = document.getElementById("feature-topic").value;
+            const currentPraise = document.getElementById("current-praise").value;
+            const lastPraise = document.getElementById("last-praise").value;
+            const motionLink = document.getElementById("motion-link").value;
+            const currentVideo = document.getElementById("current-praise-video").value;
+            const lastVideo = document.getElementById("last-praise-video").value;
+
+            // 담당자들 (이제 Input 값)
+            const personPraise = document.getElementById("person-praise").value;
+            const personLyric = document.getElementById("person-lyric").value;
+            const personMotion = document.getElementById("person-motion").value;
+            const personMemory = document.getElementById("recitation").value;
+            const personExercise = document.getElementById("gymnastics").value;
+
+            const message =
+                `${formattedDate} 기능 - ${featureTopic}
+-------------------------------------------
+찬송: ${personPraise}
+율동: ${personLyric}
+손유희: ${personMotion}
+암송: ${personMemory}
+체조: ${personExercise}
+-------------------------------------------
+지난 주 찬율: ${lastPraise}
+이번 주 찬율: ${currentPraise}
+이번 주 손유희: ${motionLink}
+${lastPraise.replace(/^.*과\s/, '')} : ${lastVideo}
+${currentPraise.replace(/^.*과\s/, '')} : ${currentVideo}
+`;
+
+            document.getElementById("final-message").value = message;
+        }
+
+        function copyMessage() {
+            const textarea = document.getElementById("final-message");
+            textarea.select();
+            document.execCommand("copy");
+            alert("복사되었습니다!");
+        }
+
+        // 선택값 변경될 때마다 자동 생성
+        document.querySelectorAll("select, input[type='date']").forEach(el => {
+            el.addEventListener("change", generateMessage);
+        });
+
+        // 주차 계산 함수 예시 (기존 코드에서 사용 중)
+        function getWeekIndex(dateStr) {
+            const startDate = new Date("2026-01-04");
+            const selected = new Date(dateStr);
+            const diff = selected - startDate;
+            return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)); // 0-based index
+        }
+    </script>
+</body>
+
+</html>
