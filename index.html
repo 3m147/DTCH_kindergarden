@@ -222,22 +222,25 @@
             "https://www.youtube.com/embed/SHD1PPwcYH8", "https://www.youtube.com/embed/iBllj0SMlck", "https://www.youtube.com/embed/zmqPw0L4DOI",
             "https://www.youtube.com/embed/LFE7nobPqaM", "https://www.youtube.com/embed/ZDXeUkYUZ38", "https://www.youtube.com/embed/R_8gQY1I3-E"
         ];
-        // 모달 관련 변수
-        let currentTargetId = null;
-        const names = [
-            "박경호b", "김지석b", "노현준b", "강민구b", "이찬민b", "최민준b",
-            "이소희s", "강민지s", "김이안s"
-        ];
-
-        // 모달 열기
+       // 모달 열기
         function openModal(targetId) {
             currentTargetId = targetId;
             const modal = document.getElementById('nameModal');
             const nameGrid = document.getElementById('nameGrid');
             
-            // 이름 버튼 생성 (최초 1회만 하거나 매번 새로 생성)
+            // [수정된 부분] targetId에 따라 보여줄 명단을 다르게 설정
+            let displayNames = names; // 기본값은 전체 명단
+            
+            if (targetId === 'piano') {
+                // 피아노인 경우만 이 명단을 사용
+                displayNames = ["이소희s", "김이안s"];
+            }
+
+            // 이름 버튼 생성
             nameGrid.innerHTML = '';
-            names.forEach(name => {
+            
+            // names.forEach 대신 displayNames.forEach를 사용
+            displayNames.forEach(name => {
                 const btn = document.createElement('button');
                 btn.className = 'name-btn';
                 btn.innerText = name;
@@ -245,7 +248,7 @@
                 nameGrid.appendChild(btn);
             });
 
-            // "선택 안함" 버튼 추가 (옵션)
+            // "선택 안함" 버튼 추가 (기존 코드 유지)
             const clearBtn = document.createElement('button');
             clearBtn.className = 'name-btn';
             clearBtn.innerText = '선택 안함';
@@ -278,6 +281,8 @@
                 closeModal();
             }
         }
+        
+        
 
         document.getElementById("select-date").addEventListener("change", function () {
             const selectedDate = new Date(this.value);
