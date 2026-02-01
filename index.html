@@ -85,6 +85,13 @@
                 </div>
 
                 <div>
+                    <label>피아노</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="piano" readonly placeholder>
+                        <button onclick="openModal('piano')">선택</button>
+                    </div>
+                </div>
+                <div>
                     <label>손유희</label>
                     <div class="input-with-btn">
                         <input type="text" id="person-motion" readonly placeholder>
@@ -219,7 +226,7 @@
         let currentTargetId = null;
         const names = [
             "박경호b", "김지석b", "노현준b", "강민구b", "이찬민b", "최민준b",
-            "조현지s", "강민지s", "김이안s"
+            "이소희s", "강민지s", "김이안s"
         ];
 
         // 모달 열기
@@ -331,6 +338,7 @@
             // 담당자들 (이제 Input 값)
             const personPraise = document.getElementById("person-praise").value;
             const personLyric = document.getElementById("person-lyric").value;
+            const personPiano = document.getElementById("piano").value;
             const personMotion = document.getElementById("person-motion").value;
             const personMemory = document.getElementById("recitation").value;
             const personExercise = document.getElementById("gymnastics").value;
@@ -340,6 +348,7 @@
 -------------------------------------------
 찬송: ${personPraise}
 율동: ${personLyric}
+피아노: ${personPiano}
 손유희: ${personMotion}
 암송: ${personMemory}
 체조: ${personExercise}
