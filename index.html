@@ -13,7 +13,7 @@
     <h2>유치부 기능 배치</h2>
 
     <div class="form-container">
-        
+
         <!-- 날짜 및 주제 -->
         <div class="section-card">
             <h3>기본 정보</h3>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div style="margin-top: 15px;">
                 <div class="input-group">
                     <label for="motion-link">이번 주 손유희 링크</label>
@@ -67,7 +67,7 @@
         <div class="section-card">
             <h3>담당자 선택</h3>
             <div class="grid-3">
-                
+
                 <div>
                     <label>찬송</label>
                     <div class="input-with-btn">
@@ -225,18 +225,18 @@
 
         let currentTargetId = null;
         const names = [
-            "박경호b", "김지석b", "노현준b", "강민구b", "이찬민b", "최민준b",
+            "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
             "이소희s", "강민지s", "김이안s"
         ];
-       // 모달 열기
+        // 모달 열기
         function openModal(targetId) {
             currentTargetId = targetId;
             const modal = document.getElementById('nameModal');
             const nameGrid = document.getElementById('nameGrid');
-            
+
             // [수정된 부분] targetId에 따라 보여줄 명단을 다르게 설정
             let displayNames = names; // 기본값은 전체 명단
-            
+
             if (targetId === 'piano') {
                 // 피아노인 경우만 이 명단을 사용
                 displayNames = ["이소희s", "김이안s"];
@@ -244,7 +244,7 @@
 
             // 이름 버튼 생성
             nameGrid.innerHTML = '';
-            
+
             // names.forEach 대신 displayNames.forEach를 사용
             displayNames.forEach(name => {
                 const btn = document.createElement('button');
@@ -281,14 +281,14 @@
         }
 
         // 모달 바깥 클릭 시 닫기
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('nameModal');
             if (event.target == modal) {
                 closeModal();
             }
         }
-        
-        
+
+
 
         document.getElementById("select-date").addEventListener("change", function () {
             const selectedDate = new Date(this.value);
@@ -322,7 +322,7 @@
             generateMessage();
 
         });
-        
+
         // 기존 addEventListener 제거 (불필요)
         /*
         document.getElementById('person-praise').addEventListener('change', (e) => { console.log('찬송 담당자:', e.target.value); });
@@ -337,7 +337,7 @@
             const selectedDateObj = new Date(rawDate);
             const formattedDate = `${selectedDateObj.getMonth() + 1}월 ${selectedDateObj.getDate()}일`;
 
-            const weekIndex = getWeekIndex(rawDate); 
+            const weekIndex = getWeekIndex(rawDate);
 
             const featureTopic = document.getElementById("feature-topic").value;
             const currentPraise = document.getElementById("current-praise").value;
