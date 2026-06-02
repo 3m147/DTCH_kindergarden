@@ -10,7 +10,13 @@
 
 <body>
 
-    <h2>유치부 기능 배치</h2>
+    <div class="header-wrapper">
+        <h2>유치부 기능 배치</h2>
+        <div class="header-buttons">
+            <button class="header-btn header-add-btn" onclick="openAddModal()">추가</button>
+            <button class="header-btn header-delete-btn" onclick="openDeleteModal()">삭제</button>
+        </div>
+    </div>
 
     <div class="form-container">
 
@@ -133,7 +139,60 @@
             <div class="name-grid" id="nameGrid">
                 <!-- Buttons will be injected here via JS -->
             </div>
-            <button class="close-btn" onclick="closeModal()">달기</button>
+            <button class="close-btn" onclick="closeModal()">닫기</button>
+        </div>
+    </div>
+
+    <!-- Add Modal Structure -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">담당자 직접 추가</div>
+            
+            <label style="margin-bottom: 8px;">구분 선택</label>
+            <div class="category-grid" id="categoryGrid">
+                <button class="category-btn" onclick="selectCategory('praise', this)">찬송</button>
+                <button class="category-btn" onclick="selectCategory('lyric', this)">찬율</button>
+                <button class="category-btn" onclick="selectCategory('piano', this)">피아노</button>
+                <button class="category-btn" onclick="selectCategory('motion', this)">손유희</button>
+                <button class="category-btn" onclick="selectCategory('recitation', this)">암송</button>
+                <button class="category-btn" onclick="selectCategory('gymnastics', this)">체조</button>
+            </div>
+
+            <div style="margin-top: 20px; margin-bottom: 24px;">
+                <label for="custom-name-input">이름 입력</label>
+                <input type="text" id="custom-name-input" placeholder="이름을 입력해 주세요">
+            </div>
+
+            <div class="modal-footer-btns">
+                <button class="add-confirm-btn" onclick="confirmAdd()">추가하기</button>
+                <button class="close-btn" onclick="closeAddModal()" style="margin-top: 0;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal Structure -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">담당자 명단 삭제</div>
+            
+            <label style="margin-bottom: 8px;">구분 선택</label>
+            <div class="category-grid" id="deleteCategoryGrid">
+                <button class="category-btn" onclick="selectDeleteCategory('praise', this)">찬송</button>
+                <button class="category-btn" onclick="selectDeleteCategory('lyric', this)">찬율</button>
+                <button class="category-btn" onclick="selectDeleteCategory('piano', this)">피아노</button>
+                <button class="category-btn" onclick="selectDeleteCategory('motion', this)">손유희</button>
+                <button class="category-btn" onclick="selectDeleteCategory('recitation', this)">암송</button>
+                <button class="category-btn" onclick="selectDeleteCategory('gymnastics', this)">체조</button>
+            </div>
+
+            <div style="margin-top: 20px; margin-bottom: 24px;">
+                <label id="delete-list-label" style="display: block; margin-bottom: 10px;">명단 (구분을 선택하면 표시됩니다)</label>
+                <div class="delete-name-list" id="deleteNameList">
+                    <!-- Names with delete buttons will be injected here -->
+                </div>
+            </div>
+
+            <button class="close-btn" onclick="closeDeleteModal()" style="margin-top: 0;">닫기</button>
         </div>
     </div>
 
@@ -224,28 +283,48 @@
         ];
 
         let currentTargetId = null;
-        const names = [
-            "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
-            "이소희s", "강민지s", "김이안s"
-        ];
+
+        // 각 카테고리별 명단 관리
+        const categoryNames = {
+            'person-praise': [
+                "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
+                "이소희s", "강민지s", "김이안s"
+            ],
+            'person-lyric': [
+                "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
+                "이소희s", "강민지s", "김이안s"
+            ],
+            'piano': [
+                "이소희s", "김이안s"
+            ],
+            'person-motion': [
+                "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
+                "이소희s", "강민지s", "김이안s"
+            ],
+            'recitation': [
+                "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
+                "이소희s", "강민지s", "김이안s"
+            ],
+            'gymnastics': [
+                "박경호b", "김지석b", "강민구b", "이찬민b", "최민준b",
+                "이소희s", "강민지s", "김이안s"
+            ]
+        };
+        
+        let selectedAddCategories = [];
+
         // 모달 열기
         function openModal(targetId) {
             currentTargetId = targetId;
             const modal = document.getElementById('nameModal');
             const nameGrid = document.getElementById('nameGrid');
 
-            // [수정된 부분] targetId에 따라 보여줄 명단을 다르게 설정
-            let displayNames = names; // 기본값은 전체 명단
-
-            if (targetId === 'piano') {
-                // 피아노인 경우만 이 명단을 사용
-                displayNames = ["이소희s", "김이안s"];
-            }
+            // targetId에 맞는 명단 가져오기
+            const displayNames = categoryNames[targetId] || [];
 
             // 이름 버튼 생성
             nameGrid.innerHTML = '';
 
-            // names.forEach 대신 displayNames.forEach를 사용
             displayNames.forEach(name => {
                 const btn = document.createElement('button');
                 btn.className = 'name-btn';
@@ -254,7 +333,7 @@
                 nameGrid.appendChild(btn);
             });
 
-            // "선택 안함" 버튼 추가 (기존 코드 유지)
+            // "선택 안함" 버튼 추가
             const clearBtn = document.createElement('button');
             clearBtn.className = 'name-btn';
             clearBtn.innerText = '선택 안함';
@@ -280,11 +359,204 @@
             currentTargetId = null;
         }
 
+        // 직접 추가 모달 열기
+        function openAddModal() {
+            selectedAddCategories = [];
+            document.getElementById('custom-name-input').value = '';
+            
+            const buttons = document.querySelectorAll('#categoryGrid .category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        // 구분 선택 시 (중복 선택 가능 토글)
+        function selectCategory(category, element) {
+            const index = selectedAddCategories.indexOf(category);
+            if (index > -1) {
+                selectedAddCategories.splice(index, 1);
+                element.classList.remove('active');
+            } else {
+                selectedAddCategories.push(category);
+                element.classList.add('active');
+            }
+        }
+
+        // 직접 추가 모달 닫기
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+        // 직접 추가 확인
+        function confirmAdd() {
+            if (selectedAddCategories.length === 0) {
+                alert('구분을 최소 하나 이상 선택해 주세요 (찬송, 찬율 등).');
+                return;
+            }
+
+            const nameInput = document.getElementById('custom-name-input');
+            const newName = nameInput.value.trim();
+
+            if (!newName) {
+                alert('이름을 입력해 주세요.');
+                return;
+            }
+
+            const categoryMap = {
+                'praise': 'person-praise',
+                'lyric': 'person-lyric',
+                'piano': 'piano',
+                'motion': 'person-motion',
+                'recitation': 'recitation',
+                'gymnastics': 'gymnastics'
+            };
+
+            // 선택한 모든 카테고리의 명단에 이름 추가 (메인 인풋에는 바로 할당하지 않음)
+            selectedAddCategories.forEach(category => {
+                const targetId = categoryMap[category];
+                if (targetId && categoryNames[targetId]) {
+                    const list = categoryNames[targetId];
+                    if (!list.includes(newName)) {
+                        list.push(newName);
+                    }
+                }
+            });
+
+            closeAddModal();
+        }
+
+        let selectedDeleteCategory = null;
+
+        // 직접 삭제 모달 열기
+        function openDeleteModal() {
+            selectedDeleteCategory = null;
+            document.getElementById('deleteNameList').innerHTML = '';
+            document.getElementById('delete-list-label').innerText = '명단 (구분을 선택하면 표시됩니다)';
+            
+            const buttons = document.querySelectorAll('#deleteCategoryGrid .category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        // 삭제 구분 선택 시
+        function selectDeleteCategory(category, element) {
+            selectedDeleteCategory = category;
+            
+            const buttons = document.querySelectorAll('#deleteCategoryGrid .category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            const categoryLabelMap = {
+                'praise': '찬송',
+                'lyric': '찬율',
+                'piano': '피아노',
+                'motion': '손유희',
+                'recitation': '암송',
+                'gymnastics': '체조'
+            };
+            
+            document.getElementById('delete-list-label').innerText = `[${categoryLabelMap[category]}] 명단`;
+            renderDeleteNameList();
+        }
+
+        // 삭제할 이름 리스트 렌더링
+        function renderDeleteNameList() {
+            const deleteNameList = document.getElementById('deleteNameList');
+            deleteNameList.innerHTML = '';
+
+            if (!selectedDeleteCategory) return;
+
+            const categoryMap = {
+                'praise': 'person-praise',
+                'lyric': 'person-lyric',
+                'piano': 'piano',
+                'motion': 'person-motion',
+                'recitation': 'recitation',
+                'gymnastics': 'gymnastics'
+            };
+
+            const targetId = categoryMap[selectedDeleteCategory];
+            const list = categoryNames[targetId] || [];
+
+            if (list.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.style.color = '#868e96';
+                emptyMsg.style.fontSize = '0.95rem';
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.padding = '20px 0';
+                emptyMsg.innerText = '등록된 담당자가 없습니다.';
+                deleteNameList.appendChild(emptyMsg);
+                return;
+            }
+
+            list.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'delete-name-item';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.innerText = name;
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-item-btn';
+                delBtn.innerText = '삭제';
+                delBtn.onclick = () => deleteNameItem(name);
+
+                item.appendChild(nameSpan);
+                item.appendChild(delBtn);
+                deleteNameList.appendChild(item);
+            });
+        }
+
+        // 이름 삭제 실행
+        function deleteNameItem(name) {
+            if (!selectedDeleteCategory) return;
+
+            const categoryMap = {
+                'praise': 'person-praise',
+                'lyric': 'person-lyric',
+                'piano': 'piano',
+                'motion': 'person-motion',
+                'recitation': 'recitation',
+                'gymnastics': 'gymnastics'
+            };
+
+            const targetId = categoryMap[selectedDeleteCategory];
+            const list = categoryNames[targetId];
+            
+            if (list) {
+                const index = list.indexOf(name);
+                if (index > -1) {
+                    list.splice(index, 1);
+                }
+            }
+
+            // 만약 메인 페이지의 입력 필드에 입력된 값이 삭제한 이름과 같다면 비우기
+            const targetInput = document.getElementById(targetId);
+            if (targetInput && targetInput.value === name) {
+                targetInput.value = '';
+                generateMessage(); // 메시지 재생성
+            }
+
+            renderDeleteNameList();
+        }
+
+        // 직접 삭제 모달 닫기
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
         // 모달 바깥 클릭 시 닫기
         window.onclick = function (event) {
-            const modal = document.getElementById('nameModal');
-            if (event.target == modal) {
+            const nameModal = document.getElementById('nameModal');
+            const addModal = document.getElementById('addModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target == nameModal) {
                 closeModal();
+            } else if (event.target == addModal) {
+                closeAddModal();
+            } else if (event.target == deleteModal) {
+                closeDeleteModal();
             }
         }
 
